@@ -43,11 +43,13 @@ ENDIF()
 ################
 ## OS ports
 #########################
-if (WIN32)
+if (TOOLCHAIN STREQUAL "armgcc")
+    set(LEXBOR_OS_PORT_NAME "playdate")
+elseif(WIN32)
     set(LEXBOR_OS_PORT_NAME "windows_nt")
 else ()
     set(LEXBOR_OS_PORT_NAME "posix")
-endif (WIN32)
+endif ()
 
 ################
 ## Macro

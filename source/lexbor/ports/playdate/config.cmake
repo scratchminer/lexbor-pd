@@ -1,0 +1,7 @@
+if(NOT DEFINED LEXBOR_OPTIMIZATION_LEVEL)
+	set(LEXBOR_OPTIMIZATION_LEVEL "")
+endif()
+
+if(NOT DEFINED LEXBOR_C_FLAGS)
+	set(LEXBOR_C_FLAGS "-Wall -pedantic -pipe -std=c99")
+endif()
