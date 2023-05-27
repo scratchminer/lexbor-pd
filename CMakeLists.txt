@@ -169,6 +169,27 @@ FOREACH(module ${LEXBOR_MODULES})
     LIST(APPEND LEXBOR_SOURCES ${sources})
 ENDFOREACH()
 
+IF(${LEXBOR_OS_PORT_NAME} STREQUAL "playdate")
+    # find the SDK
+    set(ENVSDK $ENV{PLAYDATE_SDK_PATH})
+
+    if (NOT ${ENVSDK} STREQUAL "")
+    	# Convert path from Windows
+    	file(TO_CMAKE_PATH ${ENVSDK} SDK)
+    else ()
+    	execute_process(
+            COMMAND bash -c "egrep '^\\s*SDKRoot' $HOME/.Playdate/config"
+            COMMAND head -n 1
+            COMMAND cut -c9-
+            OUTPUT_VARIABLE SDK
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    	)
+    endif ()
+    
+    LIST(APPEND LEXBOR_SOURCES ${SDK}/C_API/buildsupport/setup.c)
+    add_link_options("${MCFLAGS} -T${SDK}/C_API/buildsupport/link_map.ld -Wl,-Map=game.map,--cref,--gc-sections,--no-warn-mismatch")
+ENDIF()
+
 ## First, need to add target for shared and static library
 IF(LEXBOR_BUILD_SHARED)
     add_library(${LEXBOR_LIB_NAME} SHARED ${LEXBOR_SOURCES})
@@ -225,7 +246,7 @@ IF(LEXBOR_BUILD_SEPARATELY)
                            "${LEXBOR_SOURCE}" "${PROJECT_NAME}" ${module})
 
         GET_MODULE_RESURSES(headers sources "${LEXBOR_SOURCE}" "${PROJECT_NAME}" ${module})
-
+        
         IF(LEXBOR_BUILD_SHARED)
             add_library(${libname} SHARED ${sources})
             target_compile_definitions(${libname} PRIVATE "LEXBOR_BUILDING")

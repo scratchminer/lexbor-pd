@@ -4,6 +4,8 @@
  * Author: Alexander Borisov <borisov@lexbor.com>
  */
 
+#include <pd_api.h>
+
 #include "lexbor/core/base.h"
 
 static lexbor_memory_malloc_f lexbor_memory_malloc = malloc;

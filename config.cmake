@@ -43,9 +43,10 @@ ENDIF()
 ################
 ## OS ports
 #########################
+
 if (TOOLCHAIN STREQUAL "armgcc")
     set(LEXBOR_OS_PORT_NAME "playdate")
-elseif(WIN32)
+elseif (WIN32)
     set(LEXBOR_OS_PORT_NAME "windows_nt")
 else ()
     set(LEXBOR_OS_PORT_NAME "posix")
@@ -234,7 +235,7 @@ MACRO(GET_MODULE_RESURSES headers sources source_dir pname module)
     file(GLOB_RECURSE sources "${source_dir}/${pname}/${module}/*.c")
 
     set(port_dir_name "${source_dir}/${pname}/ports/${LEXBOR_OS_PORT_NAME}/${pname}/${module}")
-
+    
     IF(IS_DIRECTORY ${port_dir_name})
         file(GLOB_RECURSE port_headers "${port_dir_name}/*.h")
         file(GLOB_RECURSE port_sources "${port_dir_name}/*.c")

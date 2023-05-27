@@ -22,6 +22,7 @@ extern PlaydateAPI *pd;
 typedef struct {
     const lxb_char_t *dirpath;
     lexbor_fs_dir_opt_t opt;
+    lexbor_fs_dir_file_f callback;
     void *ctx;
 } lexbor_fs_dir_arg;
 
@@ -43,12 +44,12 @@ lexbor_fs_dir_read_cb(const char *name, lexbor_fs_dir_arg *arg)
     }
     
     char *full_path;
-    pd->system->format_string(&full_path, "%s%s", (const char *) opt->dirpath, name);
+    pd->system->formatString(&full_path, "%s%s", (const char *) arg->dirpath, name);
     
-    lexbor_action_t action = callback((const lxb_char_t *) full_path,
+    lexbor_action_t action = arg->callback((const lxb_char_t *) full_path,
                       strlen(full_path),
                       (const lxb_char_t *) name,
-                      strlen(name), opt->ctx);
+                      strlen(name), arg->ctx);
     free(full_path);
 }
 
@@ -60,6 +61,7 @@ lexbor_fs_dir_read(const lxb_char_t *dirpath, lexbor_fs_dir_opt_t opt,
     
     arg.dirpath = dirpath;
     arg.opt = opt;
+    arg.callback = callback;
     arg.ctx = ctx;
     
     int err = pd->file->listfiles((const char *) dirpath, lexbor_fs_dir_read_cb, &arg, !(opt & LEXBOR_FS_DIR_OPT_WITHOUT_HIDDEN));
@@ -96,7 +98,7 @@ lexbor_fs_file_easy_read(const lxb_char_t *full_path, size_t *len)
     size_t nread;
     lxb_char_t *data;
 
-    SDFile fh = pd->file->open((const char *) full_path, kFileRead | kFileReadData);
+    SDFile *fh = pd->file->open((const char *) full_path, kFileRead | kFileReadData);
     if (fh == NULL) {
         goto error;
     }
